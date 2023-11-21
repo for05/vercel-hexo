@@ -17,20 +17,11 @@ jobs:
 		with:
           submodules: 'true'
 
-      - name: Build and Deploy
-        uses: Tit1e/hexo-deploy-github-pages-action@master
-        env:
-          PERSONAL_TOKEN: ${{ secrets.hexotoken }} # secret 名
-          PUBLISH_REPOSITORY: for05/hexosite
-          BRANCH: gh-pages
-          PUBLISH_DIR: ./public
-  async-github:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sync to github
-        uses: wearerequired/git-mirror-action@master
-
+      - name: Deploy blog
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          # 注意替换为你的 GitHub 源仓库地址
-          source-repo: git@github.com:for05/hexosite.git
+          personal_token: ${{ secrets.hexotoken }}
+          publish_branch: gh-pages
+          publish_dir: ./public
+          full_commit_message: GitHub Actions Auto Builder
+          disable_nojekyll: true
