@@ -1,51 +1,36 @@
 name: Hexo
-
 on:
   push:
     branches:
-      - main
-
+      - main # master 分支有 push 行为时就触发这个 action
+	  
 env:
   TZ: Asia/Shanghai
 
 jobs:
-  blog-cicd:
-    name: Hexo build and deploy
+  build-and-deploy:
+      name: Hexo build and deploy
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout codes
+      - name: Checkout
         uses: actions/checkout@v2
-        with:
+		with:
           submodules: 'true'
 
-      - name: Setup node
-        uses: actions/setup-node@v1.1.0
-        with:
-          version: "12.x"
+      - name: Build and Deploy
+        uses: Tit1e/hexo-deploy-github-pages-action@master
+        env:
+          PERSONAL_TOKEN: ${{ secrets.hexotoken }} # secret 名
+          PUBLISH_REPOSITORY: for05/hexosite # 公共仓库，格式：GitHub 用户名/仓库名
+          BRANCH: gh-pages # 分支，根据实际填写
+          PUBLISH_DIR: ./public # 部署 public 目录下的文件，hexo 一般都是这个目录，可根据实际调整
+  async-github:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync to github
+        uses: wearerequired/git-mirror-action@master
 
-      - name: Cache Node Dependencies
-        id: cache
-        uses: actions/cache@v2
         with:
-          path: ~/.npm
-          key: ${{runner.OS}}-npm-caches-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        run: |
-        npm install
-        npm install -g hexo-cli gulp
-        
-      - name: Generate files
-        run: |
-#          mv ./_config.theme.yml ./themes/themename/_config.yml
-          hexo generate
-
-      - name: Deploy blog
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          personal_token: ${{ secrets.hexotoken }}
-          publish_branch: gh-pages
-          publish_dir: ./public
-          full_commit_message: GitHub Actions Auto Builder
-          disable_nojekyll: true
+          # 注意替换为你的 GitHub 源仓库地址
+          source-repo: git@github.com:for05/hexosite.git
