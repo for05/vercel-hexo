@@ -33,8 +33,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install hexo-cli -g
-          npm install
+        npm install
+        npm install -g hexo-cli gulp
+        
       - name: Generate files
         run: |
 #          mv ./_config.theme.yml ./themes/themename/_config.yml
