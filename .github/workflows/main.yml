@@ -1,8 +1,7 @@
 name: Hexo
 on:
   push:
-    branches:
-      - main
+    branches: main
 	  
 env:
   TZ: Asia/Shanghai
